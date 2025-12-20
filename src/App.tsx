@@ -1,28 +1,35 @@
-import miLogo from './assets/favicon.svg'
-import myLogo from '/favicon.svg'
+import miLogo from "./assets/favicon.svg";
+import myLogo from "/favicon.svg";
+import { useState } from "react";
 import {
   // useMutation,
   useQuery,
+  keepPreviousData,
   // useQueryClient,
 } from "@tanstack/react-query";
-import './App.css'
-import SearchBox from './components/SearchBox/SearchBox';
-import Pagination from './components/Pagination/Pagination';
-import { fetchNotes } from './services/noteService';
-import NoteList from './components/NoteList/NoteList';
+import "./App.css";
+
+import { fetchNotes } from "./services/noteService";
+
+import SearchBox from "./components/SearchBox/SearchBox";
+import Pagination from "./components/Pagination/Pagination";
+import NoteList from "./components/NoteList/NoteList";
+
 
 function App() {
+  const [currentPage, setCurrentPage] = useState(1);
+
   // const queryClient = useQueryClient();
 
-  const { isPending, isError, data, error, isSuccess} = useQuery({
-    queryKey: ["notes"],
+  const { isPending, isError, data, error, isSuccess } = useQuery({
+    queryKey: ["notes", currentPage],
     queryFn: async () => {
-      const data = await fetchNotes();
-
+      const data = await fetchNotes(currentPage);
       return data;
     },
+    placeholderData: keepPreviousData,
   });
- console.log(data);
+  console.log(data);
 
   // const mutation = useMutation({
   //   mutationFn: postTodo,
@@ -31,6 +38,10 @@ function App() {
   //     queryClient.invalidateQueries({ queryKey: ["todos"] });
   //   },
   // });
+  
+  const setPage = (num: number) => {
+    setCurrentPage(num);
+  };
 
   return (
     <div className="app">
@@ -39,7 +50,13 @@ function App() {
           <img src={myLogo} className="logo" alt="logo" />
         </a>
         <SearchBox />
-        <Pagination />
+        {isSuccess && data && data?.totalPages > 1 && (
+          <Pagination
+            totalPages={data?.totalPages}
+            currentPage={currentPage}
+            setPage={setPage}
+          />
+        )}
         <button className="button">
           Create note + <img src={miLogo} className="logo" alt="logo" />
         </button>
@@ -54,4 +71,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

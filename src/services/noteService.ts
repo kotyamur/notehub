@@ -10,7 +10,7 @@ interface FetchNotesResponse {
     totalPages: number;
 }
 
-const fetchNotes = async (query: string = "", page: number = 1): Promise<FetchNotesResponse> => {
+const fetchNotes = async (page: number = 1, query: string = "" ): Promise<FetchNotesResponse> => {
     const resp = await axios.get<FetchNotesResponse>(`${BASE_URL}/notes`,     {
       params: {
         search: query,
