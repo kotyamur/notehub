@@ -34,16 +34,17 @@ function App() {
 
   return (
     <div className="app">
-      <a href="/index.html" target="_blank">
-        <img src={myLogo} className="logo" alt="logo" />
-        <img src={miLogo} className="logo" alt="logo" />
-      </a>
       <header className="toolbar">
+        <a href="/index.html" target="_blank">
+          <img src={myLogo} className="logo" alt="logo" />
+        </a>
         <SearchBox />
         <Pagination />
-        <button className="button">Create note +</button>
+        <button className="button">
+          Create note + <img src={miLogo} className="logo" alt="logo" />
+        </button>
       </header>
-      
+
       {isPending && <span>Loading...</span>}
       {isError && <span>Error: {error.message}</span>}
       {isSuccess && data.notes && data.notes.length > 0 && (
