@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { Note } from "../types/note"
 
+const myKey = import.meta.env.VITE_NOTEHUB_TOKEN;
 const BASE_URL = "https://notehub-public.goit.study/api"
 
 
@@ -9,12 +10,15 @@ interface FetchNotesResponse {
     totalPages: number;
 }
 
-const fetchNotes = async (q: string, page: number = 1): Promise<FetchNotesResponse> => {
+const fetchNotes = async (query: string = "", page: number = 1): Promise<FetchNotesResponse> => {
     const resp = await axios.get<FetchNotesResponse>(`${BASE_URL}/notes`,     {
       params: {
-        search: q,
+        search: query,
         page: page,
-      },
+        },
+        headers: {
+            "Authorization": myKey,
+        }
     })
 return resp.data
 }
