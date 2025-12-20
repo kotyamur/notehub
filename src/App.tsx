@@ -7,6 +7,7 @@ import {
   keepPreviousData,
   // useQueryClient,
 } from "@tanstack/react-query";
+// import { useDebouncedCallback } from "use-debounce";
 import "./App.css";
 
 import { fetchNotes } from "./services/noteService";
@@ -18,6 +19,7 @@ import NoteList from "./components/NoteList/NoteList";
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState("");
 
   // const queryClient = useQueryClient();
 
@@ -38,10 +40,15 @@ function App() {
   //     queryClient.invalidateQueries({ queryKey: ["todos"] });
   //   },
   // });
-  
+
   const setPage = (num: number) => {
     setCurrentPage(num);
   };
+
+  const handleFilterChange = ((value: string) => {
+    console.log(value);
+    setFilter(value);
+  });
 
   return (
     <div className="app">
@@ -49,7 +56,7 @@ function App() {
         <a href="/index.html" target="_blank">
           <img src={myLogo} className="logo" alt="logo" />
         </a>
-        <SearchBox />
+        <SearchBox value={filter} onChange={handleFilterChange} />
         {isSuccess && data && data?.totalPages > 1 && (
           <Pagination
             totalPages={data?.totalPages}
