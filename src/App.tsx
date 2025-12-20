@@ -9,15 +9,16 @@ import './App.css'
 import SearchBox from './components/SearchBox/SearchBox';
 import Pagination from './components/Pagination/Pagination';
 import { fetchNotes } from './services/noteService';
+import NoteList from './components/NoteList/NoteList';
 
 function App() {
   // const queryClient = useQueryClient();
 
-  const { data } = useQuery({
+  const { isPending, isError, data, error, isSuccess} = useQuery({
     queryKey: ["notes"],
     queryFn: async () => {
       const data = await fetchNotes();
-       
+
       return data;
     },
   });
@@ -42,6 +43,12 @@ function App() {
         <Pagination />
         <button className="button">Create note +</button>
       </header>
+      
+      {isPending && <span>Loading...</span>}
+      {isError && <span>Error: {error.message}</span>}
+      {isSuccess && data.notes && data.notes.length > 0 && (
+        <NoteList notes={data.notes} />
+      )}
     </div>
   );
 }
