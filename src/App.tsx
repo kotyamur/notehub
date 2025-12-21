@@ -1,6 +1,6 @@
 import miLogo from "./assets/favicon.svg";
 import myLogo from "/favicon.svg";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import {
   // useMutation,
   useQuery,
@@ -15,7 +15,6 @@ import { fetchNotes } from "./services/noteService";
 import SearchBox from "./components/SearchBox/SearchBox";
 import Pagination from "./components/Pagination/Pagination";
 import NoteList from "./components/NoteList/NoteList";
-
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,10 +44,10 @@ function App() {
     setCurrentPage(num);
   };
 
-  const handleFilterChange = ((value: string) => {
-    console.log(value);
-    setFilter(value);
-  });
+  const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log(event.currentTarget);
+    setFilter(event.currentTarget.value);
+  };
 
   return (
     <div className="app">
