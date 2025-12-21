@@ -15,11 +15,14 @@ import { fetchNotes } from "./services/noteService";
 import SearchBox from "./components/SearchBox/SearchBox";
 import Pagination from "./components/Pagination/Pagination";
 import NoteList from "./components/NoteList/NoteList";
+import Modal from "./components/Modal/Modal";
+import NoteForm from "./components/NoteForm/NoteForm";
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
   const [search] = useDebounce(filter, 1000)
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   // const queryClient = useQueryClient();
 
@@ -45,7 +48,13 @@ function App() {
   };
 
 
-;
+  const onOpenModal = () => {
+    setIsOpenModal(true);
+  };
+  
+  const onCloseModal = () => {
+    setIsOpenModal(false);
+  }
 
   return (
     <div className="app">
@@ -62,7 +71,7 @@ function App() {
             setPage={setPage}
           />
         )}
-        <button className="button">
+        <button className="button" onClick={onOpenModal}>
           Create note + <img src={miLogo} className="logo" alt="logo" />
         </button>
       </header>
@@ -71,6 +80,12 @@ function App() {
       {isError && <span>Error: {error.message}</span>}
       {isSuccess && data.notes && data.notes.length > 0 && (
         <NoteList notes={data.notes} />
+      )}
+
+      {isOpenModal && (
+        <Modal onClose={onCloseModal}>
+          <NoteForm />
+        </Modal>
       )}
     </div>
   );
