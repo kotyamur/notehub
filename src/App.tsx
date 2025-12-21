@@ -1,13 +1,13 @@
 import miLogo from "./assets/favicon.svg";
 import myLogo from "/favicon.svg";
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import {
   // useMutation,
   useQuery,
   keepPreviousData,
   // useQueryClient,
 } from "@tanstack/react-query";
-// import { useDebouncedCallback } from "use-debounce";
+import { useDebounce } from "use-debounce";
 import "./App.css";
 
 import { fetchNotes } from "./services/noteService";
@@ -19,18 +19,18 @@ import NoteList from "./components/NoteList/NoteList";
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
+  const [search] = useDebounce(filter, 1000)
 
   // const queryClient = useQueryClient();
 
   const { isPending, isError, data, error, isSuccess } = useQuery({
-    queryKey: ["notes", currentPage],
+    queryKey: ["notes", currentPage, search],
     queryFn: async () => {
-      const data = await fetchNotes(currentPage);
+      const data = await fetchNotes(currentPage, search);
       return data;
     },
     placeholderData: keepPreviousData,
   });
-  console.log(data);
 
   // const mutation = useMutation({
   //   mutationFn: postTodo,
@@ -44,10 +44,8 @@ function App() {
     setCurrentPage(num);
   };
 
-  const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log(event.currentTarget);
-    setFilter(event.currentTarget.value);
-  };
+
+;
 
   return (
     <div className="app">
@@ -55,7 +53,8 @@ function App() {
         <a href="/index.html" target="_blank">
           <img src={myLogo} className="logo" alt="logo" />
         </a>
-        <SearchBox value={filter} onChange={handleFilterChange} />
+
+        <SearchBox value={filter} onChange={setFilter} />
         {isSuccess && data && data?.totalPages > 1 && (
           <Pagination
             totalPages={data?.totalPages}
