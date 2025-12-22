@@ -22,7 +22,11 @@ const addNoteSchema = Yup.object().shape({
 
 const initialValues: Values = { title: "", content: "", tag: "" };
 
-const NoteForm = () => {
+interface NoteFormProps {
+  onClose: () => void;
+}
+
+const NoteForm = ({ onClose }: NoteFormProps) => {
   const fieldId = useId();
 
   const handleSubmit = (values: Values, actions: FormikHelpers<Values>) => {
@@ -81,7 +85,7 @@ const NoteForm = () => {
         </div>
 
         <div className={css.actions}>
-          <button type="button" className={css.cancelButton}>
+          <button type="button" className={css.cancelButton} onClick={onClose}>
             Cancel
           </button>
           <button type="submit" className={css.submitButton} disabled={false}>
