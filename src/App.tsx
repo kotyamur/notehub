@@ -1,16 +1,11 @@
 import miLogo from "./assets/favicon.svg";
 import myLogo from "/favicon.svg";
 import { useState } from "react";
-import {
-  // useMutation,
-  useQuery,
-  keepPreviousData,
-  // useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, keepPreviousData, useQueryClient} from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import "./App.css";
 
-import { fetchNotes } from "./services/noteService";
+import { deleteNoteById, fetchNotes } from "./services/noteService";
 
 import SearchBox from "./components/SearchBox/SearchBox";
 import Pagination from "./components/Pagination/Pagination";
@@ -21,10 +16,10 @@ import NoteForm from "./components/NoteForm/NoteForm";
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState("");
-  const [search] = useDebounce(filter, 1000)
+  const [search] = useDebounce(filter, 1000);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const { isPending, isError, data, error, isSuccess } = useQuery({
     queryKey: ["notes", currentPage, search],
@@ -35,26 +30,33 @@ function App() {
     placeholderData: keepPreviousData,
   });
 
-  // const mutation = useMutation({
-  //   mutationFn: postTodo,
-  //   onSuccess: () => {
-  //     // Invalidate and refetch
-  //     queryClient.invalidateQueries({ queryKey: ["todos"] });
-  //   },
-  // });
+  const mutation = useMutation({
+    mutationFn: async (id: string) => {
+      return deleteNoteById(id);
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({
+        queryKey: ["notes", currentPage, search],
+      });
+    },
+  });
+
+  const deleteNote = async (id: string) => {
+    mutation.mutate(id);
+  };
 
   const setPage = (num: number) => {
     setCurrentPage(num);
   };
 
-
   const onOpenModal = () => {
     setIsOpenModal(true);
   };
-  
+
   const onCloseModal = () => {
     setIsOpenModal(false);
-  }
+  };
 
   return (
     <div className="app">
@@ -79,12 +81,12 @@ function App() {
       {isPending && <span>Loading...</span>}
       {isError && <span>Error: {error.message}</span>}
       {isSuccess && data.notes && data.notes.length > 0 && (
-        <NoteList notes={data.notes} />
+        <NoteList notes={data.notes} onDelete={deleteNote} />
       )}
 
       {isOpenModal && (
         <Modal onClose={onCloseModal}>
-          <NoteForm />
+          <NoteForm onClose={onCloseModal} />
         </Modal>
       )}
     </div>

@@ -3,8 +3,9 @@ import css from "./NoteList.module.css";
 
 type NoteListProps = {
   notes: Note[];
+  onDelete: (id: string)=> void;
 };
-const NoteList = ({ notes }: NoteListProps) => {
+const NoteList = ({ notes, onDelete }: NoteListProps) => {
   return (
     <ul className={css.list}>
       {notes.map((item) => (
@@ -13,7 +14,9 @@ const NoteList = ({ notes }: NoteListProps) => {
           <p className={css.content}>{item.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{item.tag}</span>
-            <button className={css.button}>Delete</button>
+            <button className={css.button} onClick={() => onDelete(item.id)}>
+              Delete
+            </button>
           </div>
         </li>
       ))}
