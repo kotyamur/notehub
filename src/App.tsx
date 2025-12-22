@@ -5,13 +5,15 @@ import { useMutation, useQuery, keepPreviousData, useQueryClient} from "@tanstac
 import { useDebounce } from "use-debounce";
 import "./App.css";
 
-import { deleteNoteById, fetchNotes } from "./services/noteService";
+import { createNote, deleteNoteById, fetchNotes } from "./services/noteService";
+import type { Values } from "./types/note";
 
 import SearchBox from "./components/SearchBox/SearchBox";
 import Pagination from "./components/Pagination/Pagination";
 import NoteList from "./components/NoteList/NoteList";
 import Modal from "./components/Modal/Modal";
 import NoteForm from "./components/NoteForm/NoteForm";
+
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,9 +32,9 @@ function App() {
     placeholderData: keepPreviousData,
   });
 
-  const mutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return deleteNoteById(id);
+      return await deleteNoteById(id);
     },
     onSuccess: () => {
       // Invalidate and refetch
@@ -42,8 +44,23 @@ function App() {
     },
   });
 
-  const deleteNote = async (id: string) => {
-    mutation.mutate(id);
+  const postMutation = useMutation({
+    mutationFn: async (newNote: Values) => {
+      return await createNote(newNote);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notes", currentPage, search],
+      });
+    },
+  });
+
+  const handleCreateNote = (note: Values) => {
+    postMutation.mutate(note);
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   const setPage = (num: number) => {
@@ -81,12 +98,12 @@ function App() {
       {isPending && <span>Loading...</span>}
       {isError && <span>Error: {error.message}</span>}
       {isSuccess && data.notes && data.notes.length > 0 && (
-        <NoteList notes={data.notes} onDelete={deleteNote} />
+        <NoteList notes={data.notes} onDelete={handleDeleteNote} />
       )}
 
       {isOpenModal && (
         <Modal onClose={onCloseModal}>
-          <NoteForm onClose={onCloseModal} />
+          <NoteForm onClose={onCloseModal} onCreate={handleCreateNote} />
         </Modal>
       )}
     </div>

@@ -7,3 +7,9 @@ export interface Note {
     tag: string;
 }
 
+
+export interface Values {
+  title: string;
+  content: string;
+  tag: string;
+}

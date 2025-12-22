@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note } from "../types/note";
+import type { Note, Values } from "../types/note";
 
 const myKey = import.meta.env.VITE_NOTEHUB_TOKEN;
 const BASE_URL = "https://notehub-public.goit.study/api";
@@ -25,18 +25,16 @@ const fetchNotes = async (
   return resp.data;
 };
 
-// const createNote = async (newNote: Note) => {
-//     const resp = await axios.get<FetchNotesResponse>(`${BASE_URL}/notes`,     {
-//       params: {
-//         search: query,
-//         page: page,
-//         },
-//         headers: {
-//             "Authorization": myKey,
-//         }
-//     })
-// return resp.data
-// }
+const createNote = async (newNote: Values): Promise<Note> => {
+  const resp = await axios.post<Note>(`${BASE_URL}/notes`, newNote, {
+    headers: {
+      Authorization: myKey,
+    },
+  });
+    console.log(resp);
+    
+  return resp.data;
+};
 
 const deleteNoteById = async (noteId: string): Promise<Note> => {
   const resp = await axios.delete<Note>(`${BASE_URL}/notes/${noteId}`, {
@@ -48,8 +46,4 @@ const deleteNoteById = async (noteId: string): Promise<Note> => {
   return resp.data;
 };
 
-export {
-  fetchNotes,
-  // createNote,
-  deleteNoteById,
-};
+export { fetchNotes, createNote, deleteNoteById };

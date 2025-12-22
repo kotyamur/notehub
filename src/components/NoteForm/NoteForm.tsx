@@ -1,13 +1,9 @@
 import { useId } from "react";
 import { Formik, Field, Form, ErrorMessage, type FormikHelpers } from "formik";
 import * as Yup from "yup";
+import type { Values } from "../../types/note";
 import css from "./NoteForm.module.css";
 
-interface Values {
-  title: string;
-  content: string;
-  tag: string;
-}
 
 const addNoteSchema = Yup.object().shape({
   title: Yup.string()
@@ -24,16 +20,24 @@ const initialValues: Values = { title: "", content: "", tag: "" };
 
 interface NoteFormProps {
   onClose: () => void;
+  onCreate: (newNote: Values) => void;
 }
 
-const NoteForm = ({ onClose }: NoteFormProps) => {
+const NoteForm = ({ onClose, onCreate }: NoteFormProps) => {
   const fieldId = useId();
 
   const handleSubmit = (values: Values, actions: FormikHelpers<Values>) => {
     console.log("Order data:", values);
-    console.log(actions);
+
+    onCreate({
+      title: values.title,
+      content: values.content,
+      tag: values.tag,
+    });
+    
     actions.resetForm();
     // actions.setSubmitting(false);
+    onClose();
   };
 
   return (
