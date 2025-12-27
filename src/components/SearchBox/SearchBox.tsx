@@ -15,11 +15,12 @@ import css from "./SearchBox.module.css";
 type SearchBoxProps = {
   value: string;
   onChange: (newValue: string) => void;
+  setPage: (newValue: number) => void;
 };
 
-const SearchBox = ({ value, onChange }: SearchBoxProps) => {
-
+const SearchBox = ({ value, onChange, setPage }: SearchBoxProps) => {
   const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPage(1);
     onChange(event.target.value);
   };
 

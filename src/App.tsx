@@ -82,7 +82,7 @@ function App() {
           <img src={myLogo} className="logo" alt="logo" />
         </a>
 
-        <SearchBox value={filter} onChange={setFilter} />
+        <SearchBox value={filter} onChange={setFilter} setPage={setPage} />
         {isSuccess && data && data?.totalPages > 1 && (
           <Pagination
             totalPages={data?.totalPages}
